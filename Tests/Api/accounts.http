@@ -1,0 +1,55 @@
+POST  https://localhost:5001/api/accounts
+content-type: application/json
+
+{
+  "login": "",
+  "password": "worlsadsda",
+  "personalInfo": {
+    "firstname": "Alex",
+    "lastname": "Duan",
+    "patronymic": "Dickson",
+    "age": 23
+  }
+}
+
+
+###
+GET https://localhost:5001/api/accounts/6
+Accept: application/json
+
+###
+PATCH https://localhost:5001/api/accounts/6071ca77f41fbb94a1047952
+Accept: application/json
+
+{
+  "login": "memecat",
+  "password": "world",
+  "personalInfo": {
+    "firstname": "Alex",
+    "lastname": "Duan",
+    "patronymic": "Dickson",
+    "age": 23
+  }
+}
+
+###
+GET https://localhost:5001/api/accounts
+Accept: application/json
+
+###
+DELETE https://localhost:5001/api/accounts/6071ccc9a064f9043cc73aa0
+
+###
+PUT https://localhost:5001/api/accounts/6071ca77f41fbb94a1047952 HTTP/1.1
+content-type: application/json
+
+{
+  "login": "memecat",
+  "password": "world",
+  "personalInfo": {
+    "firstname": "Alex",
+    "lastname": "Duan",
+    "patronymic": "Dickson",
+    "age": 23
+  }
+}
