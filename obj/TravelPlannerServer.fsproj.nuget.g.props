@@ -1,0 +1,30 @@
+﻿<?xml version="1.0" encoding="utf-8" standalone="no"?>
+<Project ToolsVersion="14.0" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
+  <PropertyGroup Condition=" '$(ExcludeRestorePackageImports)' != 'true' ">
+    <RestoreSuccess Condition=" '$(RestoreSuccess)' == '' ">True</RestoreSuccess>
+    <RestoreTool Condition=" '$(RestoreTool)' == '' ">NuGet</RestoreTool>
+    <ProjectAssetsFile Condition=" '$(ProjectAssetsFile)' == '' ">$(MSBuildThisFileDirectory)project.assets.json</ProjectAssetsFile>
+    <NuGetPackageRoot Condition=" '$(NuGetPackageRoot)' == '' ">/home/cgen/.nuget/packages/</NuGetPackageRoot>
+    <NuGetPackageFolders Condition=" '$(NuGetPackageFolders)' == '' ">/home/cgen/.nuget/packages/</NuGetPackageFolders>
+    <NuGetProjectStyle Condition=" '$(NuGetProjectStyle)' == '' ">PackageReference</NuGetProjectStyle>
+    <NuGetToolVersion Condition=" '$(NuGetToolVersion)' == '' ">5.8.0</NuGetToolVersion>
+  </PropertyGroup>
+  <ItemGroup Condition=" '$(ExcludeRestorePackageImports)' != 'true' ">
+    <SourceRoot Include="$([MSBuild]::EnsureTrailingSlash($(NuGetPackageFolders)))" />
+  </ItemGroup>
+  <PropertyGroup>
+    <MSBuildAllProjects>$(MSBuildAllProjects);$(MSBuildThisFileFullPath)</MSBuildAllProjects>
+  </PropertyGroup>
+  <PropertyGroup Condition=" '$(ExcludeRestorePackageImports)' != 'true' ">
+    <PkgUtf8Json Condition=" '$(PkgUtf8Json)' == '' ">/home/cgen/.nuget/packages/utf8json/1.3.7</PkgUtf8Json>
+    <PkgUtf8Json_ImmutableCollection Condition=" '$(PkgUtf8Json_ImmutableCollection)' == '' ">/home/cgen/.nuget/packages/utf8json.immutablecollection/1.3.7</PkgUtf8Json_ImmutableCollection>
+    <PkgFSharp_Core Condition=" '$(PkgFSharp_Core)' == '' ">/home/cgen/.nuget/packages/fsharp.core/5.0.0</PkgFSharp_Core>
+    <PkgUtf8Json_FSharpExtensions Condition=" '$(PkgUtf8Json_FSharpExtensions)' == '' ">/home/cgen/.nuget/packages/utf8json.fsharpextensions/0.1.0</PkgUtf8Json_FSharpExtensions>
+    <PkgPly Condition=" '$(PkgPly)' == '' ">/home/cgen/.nuget/packages/ply/0.3.1</PkgPly>
+    <PkgMongoDB_Driver Condition=" '$(PkgMongoDB_Driver)' == '' ">/home/cgen/.nuget/packages/mongodb.driver/2.12.2</PkgMongoDB_Driver>
+    <PkgGiraffe Condition=" '$(PkgGiraffe)' == '' ">/home/cgen/.nuget/packages/giraffe/5.0.0-rc-6</PkgGiraffe>
+    <PkgFsToolkit_ErrorHandling Condition=" '$(PkgFsToolkit_ErrorHandling)' == '' ">/home/cgen/.nuget/packages/fstoolkit.errorhandling/2.1.2</PkgFsToolkit_ErrorHandling>
+    <PkgFSharp_Data Condition=" '$(PkgFSharp_Data)' == '' ">/home/cgen/.nuget/packages/fsharp.data/4.0.1</PkgFSharp_Data>
+    <PkgFSharp_Control_AsyncSeq Condition=" '$(PkgFSharp_Control_AsyncSeq)' == '' ">/home/cgen/.nuget/packages/fsharp.control.asyncseq/3.0.3</PkgFSharp_Control_AsyncSeq>
+  </PropertyGroup>
+</Project>
