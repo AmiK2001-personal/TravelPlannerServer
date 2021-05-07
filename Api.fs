@@ -24,77 +24,65 @@ module Query =
         | false -> None
 
 module ServerErrors =
-    let NotImplemented =
-        fun (next: HttpFunc) (ctx: HttpContext) ->
-            task { return! (ServerErrors.notImplemented (text "Not implemented")) next ctx }
-
-type Endpoint<'a>() =
-    member _.Get(_: string) : HttpFunc -> HttpContext -> Task<HttpContext option> = ServerErrors.NotImplemented
-    member _.GetAll : HttpFunc -> HttpContext -> Task<HttpContext option> = ServerErrors.NotImplemented
-    member _.Post : HttpFunc -> HttpContext -> Task<HttpContext option> = ServerErrors.NotImplemented
-    member _.Delete(_: string) : HttpFunc -> HttpContext -> Task<HttpContext option> = ServerErrors.NotImplemented
-    member _.Put(_: string) : HttpFunc -> HttpContext -> Task<HttpContext option> = ServerErrors.NotImplemented
-    member _.Patch(_: string) : HttpFunc -> HttpContext -> Task<HttpContext option> = ServerErrors.NotImplemented
-    member _.Head(_: string) : HttpFunc -> HttpContext -> Task<HttpContext option> = ServerErrors.NotImplemented
-    member _.HeadAll : HttpFunc -> HttpContext -> Task<HttpContext option> = ServerErrors.NotImplemented
+    let NotImplemented : HttpHandler =
+        fun next ctx -> task { return! (ServerErrors.notImplemented (text "Not implemented")) next ctx }
 
 type Message =
     static member fromResult input = input |> either json (ToString >> json)
 
-module Controllers =
-    type AccountController() =
-        inherit Endpoint<Account>()
+let tryParseObjectBsonId id = BsonObjectId.tryParse id >>> ToString
 
-        member __.Get(id: string) =
-            BsonObjectId.tryParse id
-            >>> ToString
-            >>> AccountRepository.Read
-            |> Message.fromResult
+let toResults x =
+    x |> Task.map (List.ofSeq >> results) |> ok
 
-        member __.Post =
-            fun (next: HttpFunc) (ctx: HttpContext) ->
-                task {
-                    let! accountFromBody = fromBody<Account> ctx
+module Account =
+    let accountFromBody = fromBody<Account>
 
-                    return!
-                        (accountFromBody >>> AccountRepository.Add
-                         |> Message.fromResult)
-                            next
-                            ctx
-                }
+    let Get (id: string) =
+        BsonObjectId.tryParse id
+        >>> ToString
+        >>> AccountRepository.Read
+        |> Message.fromResult
+
+    let Post : HttpHandler =
+        fun next ctx ->
+            task {
+                let! accountFromBody = fromBody<Account> ctx
+
+                return!
+                    (accountFromBody >>> AccountRepository.Add
+                     |> Message.fromResult)
+                        next
+                        ctx
+            }
 
 
-        member __.Delete id =
-            BsonObjectId.tryParse id
-            >>> ToString
-            >>> AccountRepository.Delete
-            |> Message.fromResult
+    let Delete id =
+        BsonObjectId.tryParse id
+        >>> ToString
+        >>> AccountRepository.Delete
+        |> Message.fromResult
 
-        member __.Put id =
-            fun (next: HttpFunc) (ctx: HttpContext) ->
-                task {
-                    let! accountFromBody = fromBody<Account> ctx
+    let Put id : HttpHandler =
+        fun next ctx ->
+            task {
+                let! accountFromBody = fromBody<Account> ctx
 
-                    return!
-                        (accountFromBody >>> AccountRepository.Edit id
-                         |> Message.fromResult)
-                            next
-                            ctx
-                }
+                return!
+                    (accountFromBody >>> AccountRepository.Edit id
+                     |> Message.fromResult)
+                        next
+                        ctx
+            }
 
-        member __.GetAll =
-            fun (next: HttpFunc) (ctx: HttpContext) ->
-                task {
-                    return!
-                        (AccountRepository.Browse(fun _ -> true)
-                         |> Task.map (List.ofSeq >> results) |> ok
-                         |> Message.fromResult)
-                            next
-                            ctx
-                }
-
-    type TravelController() =
-        inherit Endpoint<Travel>()
-
-    let Account = AccountController()
-    let Travel = TravelController()
+    let GetAll : HttpHandler =
+        fun next ctx ->
+            task {
+                return!
+                    (AccountRepository.Browse(fun _ -> true)
+                     |> Task.map (List.ofSeq >> results)
+                     |> ok
+                     |> Message.fromResult)
+                        next
+                        ctx
+            }

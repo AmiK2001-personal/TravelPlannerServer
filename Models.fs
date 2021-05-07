@@ -45,13 +45,16 @@ module BsonObjectId =
         | true -> BsonObjectId(objectId) |> ok
         | false -> InvalidBsonId |> error
 
-let fromBody<'a>(ctx: HttpContext) =
-        task {
-            try
-                let! body = ctx.ReadBodyFromRequestAsync()
-                return body |> Json.fromJson<'a> |> ok
-            with _ -> return error ^ JsonParseError $"Can't parse json from body into {typeof<'a>}"
-        }
+let fromBody<'a> (ctx: HttpContext) =
+    task {
+        try
+            let! body = ctx.ReadBodyFromRequestAsync()
+            return body |> Json.fromJson<'a> |> ok
+        with _ ->
+            return
+                error
+                ^ JsonParseError $"Can't parse json from body into {typeof<'a>}"
+    }
 
 [<CLIMutable>]
 type PersonalInfo =

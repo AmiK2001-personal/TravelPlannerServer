@@ -2,7 +2,7 @@ POST  https://localhost:5001/api/accounts
 content-type: application/json
 
 {
-  "login": "",
+  "login": "test",
   "password": "worlsadsda",
   "personalInfo": {
     "firstname": "Alex",
@@ -52,4 +52,19 @@ content-type: application/json
     "patronymic": "Dickson",
     "age": 23
   }
+}
+
+###
+POST  http://185.246.67.169:5001/api/accounts
+content-type: application/json
+
+{
+"login": "test",
+"password": "worlsadsda",
+"personalInfo": {
+"firstname": "Alex",
+"lastname": "Duan",
+"patronymic": "Dickson",
+"age": 23
+}
 }

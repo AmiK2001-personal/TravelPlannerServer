@@ -8,7 +8,7 @@ open Microsoft.AspNetCore.Hosting
 open Microsoft.Extensions.Hosting
 open Microsoft.Extensions.Logging
 open Microsoft.Extensions.DependencyInjection
-open TravelPlannerServer.Api.Controllers
+open TravelPlannerServer.Api
 open Utf8Json.Resolvers
 open Utf8Json.FSharp
 
@@ -32,14 +32,7 @@ let webApp =
                            >=> choose [ routef "/accounts/%s" Account.Delete ]
                            PUT
                            >=> choose [ routef "/accounts/%s" Account.Put ]
-                           PATCH
-                           >=> choose [ routef "/accounts/%s" Account.Patch ]
-                           HEAD
-                           >=> choose [ route "/accounts"
-                                        >=> publicResponseCaching 30 None
-                                        >=> Account.HeadAll
-                                        routef "/accounts/%s" Account.Head ] ])
-             setStatusCode 404 >=> text "Not Found" ]
+                           setStatusCode 404 >=> text "Not Found" ]) ]
 
 // ---------------------------------
 // Error handler
@@ -58,7 +51,7 @@ let errorHandler (ex: Exception) (logger: ILogger) =
 
 let configureCors (builder: CorsPolicyBuilder) =
     builder
-        .WithOrigins("http://localhost:8080")
+        .AllowAnyOrigin()
         .AllowAnyMethod()
         .AllowAnyHeader()
     |> ignore
