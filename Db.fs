@@ -60,10 +60,7 @@ let AccountRepository =
 
         member __.Read id =
             task {
-                match __
-                          .Collection
-                          .Find(fun x -> x.id = id)
-                          .Any() with
+                match __.Collection.Find(fun x -> x.id = id).Any() with
                 | true ->
                     let! accCursor = __.Collection.FindAsync<Account>(fun x -> x.id = id)
                     let! acc = accCursor.FirstOrDefaultAsync()
@@ -73,19 +70,12 @@ let AccountRepository =
 
         member __.Edit id newAccount =
             task {
-                return!
-                    __.Collection.FindOneAndReplaceAsync<Account>(
-                        (fun x -> x.id = id),
-                        { newAccount with id = id }
-                    )
+                return! __.Collection.FindOneAndReplaceAsync<Account>((fun x -> x.id = id), { newAccount with id = id })
             }
 
         member __.Delete id =
             task {
-                match __
-                          .Collection
-                          .Find(fun x -> x.id = id)
-                          .Any() with
+                match __.Collection.Find(fun x -> x.id = id).Any() with
                 | true ->
                     let! acc = __.Collection.FindOneAndDeleteAsync<Account>(fun x -> x.id = id)
                     return acc |> ok

@@ -363,3 +363,5 @@ FodyWeavers.xsd
 
 # Application settings
 dbsettings.json
+
+.idea/

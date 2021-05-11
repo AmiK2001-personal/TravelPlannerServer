@@ -12,6 +12,7 @@
     <Compile Include="Program.fs" />
     <Content Include="Dockerfile" />
     <Content Include="Tests\Api\accounts.http" />
+    <Content Include=".gitignore" />
     <None Include="web.config" />
     <Content Include="WebRoot/**/*">
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
