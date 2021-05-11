@@ -25,9 +25,10 @@ let webApp =
                            >=> choose [ route "/accounts"
                                         >=> publicResponseCaching 30 None
                                         >=> Account.GetAll
-                                        routef "/accounts/%s" Account.Get ]
+                                        route "/accounts/registration" >=> Account.IsPasswordMatch
+                                        routef "/accounts/%s" Account.Get]
                            POST
-                           >=> choose [ route "/accounts" >=> Account.Post ]
+                           >=> choose [ route "/accounts/registration" >=> Account.Register ]
                            DELETE
                            >=> choose [ routef "/accounts/%s" Account.Delete ]
                            PUT

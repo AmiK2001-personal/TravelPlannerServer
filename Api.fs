@@ -3,6 +3,7 @@ module TravelPlannerServer.Api
 open System
 open Microsoft.AspNetCore.Http
 open System.Threading.Tasks
+open FSharp.Data
 open Giraffe
 open FSharp.Control.Tasks
 
@@ -29,6 +30,7 @@ module ServerErrors =
 
 type Message =
     static member fromResult input = input |> either json (ToString >> json)
+    static member from input = input |> json
 
 let tryParseObjectBsonId id = BsonObjectId.tryParse id >>> ToString
 
@@ -43,8 +45,38 @@ module Account =
         >>> ToString
         >>> AccountRepository.Read
         |> Message.fromResult
+        
+    let IsRegistered (login: string) =
+        task {
+            let! res = AccountRepository.Browse (fun x -> x.login = login)
+            if res |> Seq.length > 0 then
+                return true
+            else
+                return false;
+            } |> Message.from
 
-    let Post : HttpHandler =
+//    type AuthorizationInfo = JsonProvider<""" { "login":"John", "password":"pass" } """>
+    let IsPasswordMatch : HttpHandler =
+        fun next ctx ->
+            task {
+                let query = ctx.Request.Query
+                let login = Query.tryGetValue "login" query
+                let password = Query.tryGetValue "login" query
+                
+                if login.IsSome && password.IsSome then
+                    let! res = AccountRepository.Browse (fun x -> x.login = login.Value)
+                
+                    return!
+                        (Message.from <| match res |> Seq.tryHead with
+                        | Some x -> true
+                        | None -> false)
+                        next
+                        ctx
+                else
+                    return! (false |> Message.from) next ctx
+            }
+    
+    let Register : HttpHandler =
         fun next ctx ->
             task {
                 let! accountFromBody = fromBody<Account> ctx
