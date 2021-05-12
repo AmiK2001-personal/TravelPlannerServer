@@ -1,9 +1,7 @@
 module TravelPlannerServer.Api
 
-open System
+open FsToolkit.ErrorHandling
 open Microsoft.AspNetCore.Http
-open System.Threading.Tasks
-open FSharp.Data
 open Giraffe
 open FSharp.Control.Tasks
 
@@ -45,37 +43,43 @@ module Account =
         >>> ToString
         >>> AccountRepository.Read
         |> Message.fromResult
-        
+
     let IsRegistered (login: string) =
         task {
-            let! res = AccountRepository.Browse (fun x -> x.login = login)
+            let! res = AccountRepository.Browse(fun x -> x.login = login)
+
             if res |> Seq.length > 0 then
                 return true
             else
-                return false;
-            } |> Message.from
-
-//    type AuthorizationInfo = JsonProvider<""" { "login":"John", "password":"pass" } """>
+                return false
+        }
+        |> Message.from
+    
     let IsPasswordMatch : HttpHandler =
         fun next ctx ->
             task {
                 let query = ctx.Request.Query
                 let login = Query.tryGetValue "login" query
-                let password = Query.tryGetValue "login" query
-                
+                let password = Query.tryGetValue "password" query
+
                 if login.IsSome && password.IsSome then
-                    let! res = AccountRepository.Browse (fun x -> x.login = login.Value)
-                
+                    let! res =
+                        AccountRepository.Browse
+                            (fun x ->
+                                x.login = login.Value
+                                && x.password.Value = password.Value)
+
                     return!
-                        (Message.from <| match res |> Seq.tryHead with
-                        | Some x -> true
-                        | None -> false)
-                        next
-                        ctx
+                        (Message.from
+                         <| match res |> Seq.tryHead with
+                            | Some _ -> true
+                            | None -> false)
+                            next
+                            ctx
                 else
                     return! (false |> Message.from) next ctx
             }
-    
+
     let Register : HttpHandler =
         fun next ctx ->
             task {
@@ -117,4 +121,24 @@ module Account =
                      |> Message.fromResult)
                         next
                         ctx
+            }
+
+module Travel =
+    let Create (accountId: string) : HttpHandler = fun next ctx ->
+        task {
+                let query = ctx.Request.Query
+                let name = Query.tryGetValue "name" query
+                let id = accountId |> BsonObjectId.tryParse >>> ToString
+                
+                let response =
+                    result {
+                        let! name =
+                            match name with
+                            | Some x -> Ok x
+                            | None -> Error TravelQueryError
+                        
+                        return (id >>> (fun x -> TravelRepository.Add (Travel.create name x)))
+                    }
+                
+                return! (response |> Message.fromResult) next ctx
             }

@@ -7,6 +7,7 @@
     <Compile Include="Operators.fs" />
     <Compile Include="Validation.fs" />
     <Compile Include="Models.fs" />
+    <Compile Include="DtoModels.fs" />
     <Compile Include="Db.fs" />
     <Compile Include="Api.fs" />
     <Compile Include="Program.fs" />
@@ -21,7 +22,8 @@
   <ItemGroup>
     <PackageReference Include="FSharp.Control.AsyncSeq" Version="3.0.3" />
     <PackageReference Include="FSharp.Data" Version="4.0.1" />
-    <PackageReference Include="FsToolkit.ErrorHandling" Version="2.1.2" />
+    <PackageReference Include="FsToolkit.ErrorHandling" Version="2.2.0" />
+    <PackageReference Include="FsToolkit.ErrorHandling.TaskResult" Version="2.2.0" />
     <PackageReference Include="Giraffe" Version="5.0.0-rc-6" />
     <PackageReference Include="MongoDB.Driver" Version="2.12.2" />
     <PackageReference Include="Ply" Version="0.3.*" />

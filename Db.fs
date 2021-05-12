@@ -87,3 +87,43 @@ let AccountRepository =
                 let! asyncCursor = __.Collection.FindAsync(predicate)
                 return asyncCursor.ToEnumerable()
             } }
+
+let TravelRepository =
+    { new IRepository<Travel> with
+        member __.Collection =
+            Config.db.GetCollection<Travel> "travels"
+
+        member __.Add travel =
+            task {
+                do! __.Collection.InsertOneAsync travel
+                return travel |> ok
+            }
+
+        member __.Read id =
+            task {
+                match __.Collection.Find(fun x -> x.id = id).Any() with
+                | true ->
+                    let! accCursor = __.Collection.FindAsync<Travel>(fun x -> x.id = id)
+                    let! acc = accCursor.FirstOrDefaultAsync()
+                    return (acc |> ok)
+                | false -> return (TravelNotFounded id |> error)
+            }
+
+        member __.Edit id newTravel =
+            task {
+                return! __.Collection.FindOneAndReplaceAsync<Travel>((fun x -> x.id = id), { newTravel with id = id }) }
+
+        member __.Delete id =
+            task {
+                match __.Collection.Find(fun x -> x.id = id).Any() with
+                | true ->
+                    let! acc = __.Collection.FindOneAndDeleteAsync<Travel>(fun x -> x.id = id)
+                    return acc |> ok
+                | false -> return TravelNotFounded id |> error
+            }
+
+        member __.Browse predicate =
+            task {
+                let! asyncCursor = __.Collection.FindAsync(predicate)
+                return asyncCursor.ToEnumerable()
+            } }

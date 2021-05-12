@@ -18,6 +18,11 @@ type DomainError =
     | AccountValidationError of ValidationItem list
     | AccountNotFounded of string
 
+    // Travel errors
+    | TravelNotFounded of string
+    | TravelValidationError of ValidationItem list
+    | TravelQueryError
+
     // Db errors
     | InvalidBsonId
     // Controller error
@@ -31,9 +36,15 @@ type DomainError =
         // AccountErrors
         | AccountNotFounded id -> $"Account {id} not founded. "
         | AccountValidationError errorMessages -> $"Account is not valid.\nMessage: {errorMessages}"
+        // TravelErrors
+        | TravelNotFounded id -> $"Travel {id} not founded. "
+        | TravelValidationError errorMessages -> $"Travel is not valid.\nMessage: {errorMessages}"
+        | TravelQueryError -> "Travel query error. "
         // QueryErrors
         | InvalidQuery -> "Invalid query"
         | JsonParseError s -> $"Json cannot be parsed. {s}"
+
+type Id = String
 
 module BsonObjectId =
     let generate () = BsonObjectId(ObjectId.GenerateNewId())
@@ -145,13 +156,27 @@ type Account =
               password = None }
 
 
+type Image = Array of byte
+
 [<CLIMutable>]
 type Travel =
     { [<BsonId>]
       [<BsonRepresentation(BsonType.ObjectId)>]
       id: string
-      travellers: (Account * TravellerType) list
+      travellers: (Id * TravellerType) list
       name: string
-      goodies: Goodie list
-      transportWastes: TransportWaste list
-      locations: Location list }
+      goodies: Goodie list option
+      transportWastes: TransportWaste list option
+      locations: Location list option
+      images: Image list option }
+    
+    static member create name accountId =
+        {
+            id = BsonObjectId.generate().ToString()
+            travellers = [(accountId, Creator)]
+            name = name
+            goodies = None
+            transportWastes = None
+            locations = None
+            images = None
+        }
